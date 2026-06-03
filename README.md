@@ -1,6 +1,6 @@
 🧠 AI Code Reviewer Application
 
-An AI-powered Code Reviewer web application that analyzes source code and provides intelligent suggestions, recommendations, and best practices using the OpenAI API.
+An AI-powered Code Reviewer web application that analyzes source code and provides intelligent suggestions, recommendations, and best practices using the GeminiAI API.
 Users can drag & drop files or paste code, receive instant feedback, and view their review history later.
 
 🚀 Features
