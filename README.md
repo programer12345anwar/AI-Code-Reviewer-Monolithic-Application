@@ -1,6 +1,6 @@
 🧠 AI Code Reviewer Application
 
-An AI-powered Code Reviewer web application that analyzes source code and provides intelligent suggestions, recommendations, and best practices using the GeminiAI API.
+An AI-powered Code Reviewer web application that analyzes source code and provides intelligent suggestions, recommendations, and best practices using the Gemini API.
 Users can drag & drop files or paste code, receive instant feedback, and view their review history later.
 
 🚀 Features
@@ -33,7 +33,7 @@ Clean editor-like experience
 
 Spring Boot REST APIs
 
-Environment-based OpenAI API key management
+Environment-based Gemini API key management
 
 🏗️ Tech Stack
 Frontend
@@ -64,7 +64,7 @@ MySQL
 
 AI Integration
 
-OpenAI API (for code analysis and suggestions)
+Gemini API (for code analysis and suggestions)
 
 📐 System Architecture
 Frontend (HTML/CSS/JS)
@@ -78,7 +78,7 @@ Spring Boot Backend
       MySQL
         |
         v
-   OpenAI API
+   Gemini API
 
 🖥️ Application Flow
 
@@ -86,7 +86,7 @@ User uploads a code file or pastes code into the editor
 
 Frontend sends code to backend API
 
-Backend calls OpenAI API for analysis
+Backend calls Gemini API for analysis
 
 AI response is processed and stored in MySQL
 
@@ -109,7 +109,7 @@ ai-code-reviewer-backend
  ┣ 📂 dto
  ┃ ┗ CodeReviewRequest.java
  ┣ 📂 config
- ┃ ┗ OpenAiConfig.java
+ ┃ ┗ GeminiConfig.java
  ┗ AiCodeReviewerApplication.java
 
 Frontend
@@ -136,7 +136,7 @@ spring.datasource.password=your_password
 
 spring.jpa.hibernate.ddl-auto=update
 
-openai.api.key=YOUR_OPENAI_API_KEY
+gemini.api.key=YOUR_OPENAI_API_KEY
 
 
 ⚠️ Never commit your OpenAI API key to GitHub
