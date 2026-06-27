@@ -1,10 +1,18 @@
 package com.anwar.aicodereview.model;
 
 import jakarta.persistence.*;
+<<<<<<< HEAD
+=======
+import lombok.Data;
+>>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+<<<<<<< HEAD
+=======
+@Data
+>>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
 @Entity
 @Table(name = "code_submission")
 public class CodeSubmission {
@@ -30,6 +38,7 @@ public class CodeSubmission {
         createdAt = LocalDateTime.now();
     }
 
+<<<<<<< HEAD
     public UUID getId() {
         return id;
     }
@@ -77,6 +86,8 @@ public class CodeSubmission {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+=======
+>>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
 }
 
 /*

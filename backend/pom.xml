@@ -29,6 +29,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+<<<<<<< HEAD
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -71,6 +72,8 @@
 			<artifactId>jjwt-impl</artifactId>
 			<version>${jjwt.version}</version>
 			<scope>runtime</scope>
+=======
+>>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -88,14 +91,21 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.18.38</version>
 			<optional>true</optional>
 		</dependency>
+<<<<<<< HEAD
 		
+=======
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+>>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
