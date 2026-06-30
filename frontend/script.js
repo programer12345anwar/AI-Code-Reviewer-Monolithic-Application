@@ -102,6 +102,7 @@ async function loadReviewPage() {
 
     if(!isValidId(submissionId)) return ;
     
+    
     const analysisDiv = document.getElementById('aiAnalysis');
     const loadingDiv = document.getElementById('loadingAnalysis');
     const codeView = document.getElementById('codeView');

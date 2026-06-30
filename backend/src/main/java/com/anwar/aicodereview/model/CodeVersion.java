@@ -1,5 +1,6 @@
 package com.anwar.aicodereview.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,6 +25,7 @@ public class CodeVersion {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "submission_id", nullable = false)
+    @JsonIgnore
     private CodeSubmission submission;
 
     @Column(name = "version_number", nullable = false)
