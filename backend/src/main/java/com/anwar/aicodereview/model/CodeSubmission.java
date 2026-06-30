@@ -1,18 +1,16 @@
 package com.anwar.aicodereview.model;
 
-import jakarta.persistence.*;
-<<<<<<< HEAD
-=======
-import lombok.Data;
->>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-<<<<<<< HEAD
-=======
-@Data
->>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
 @Entity
 @Table(name = "code_submission")
 public class CodeSubmission {
@@ -24,21 +22,23 @@ public class CodeSubmission {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
+    @Column(nullable = false)
     private String filename;
+
+    @Column(nullable = false, length = 50)
     private String language;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String code;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
-    protected  void onCreate() {
+    protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
 
-<<<<<<< HEAD
     public UUID getId() {
         return id;
     }
@@ -86,18 +86,4 @@ public class CodeSubmission {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-=======
->>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
 }
-
-/*
-CREATE TABLE code_submission (
-    id BINARY(16) NOT NULL,
-    user_id BINARY(16) NOT NULL,
-    filename VARCHAR(255),
-    language VARCHAR(255),
-    code TEXT,
-    created_at DATETIME(6),
-    PRIMARY KEY (id)
-) ;
- */

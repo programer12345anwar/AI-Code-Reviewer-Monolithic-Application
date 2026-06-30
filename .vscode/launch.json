@@ -3,18 +3,16 @@
   "configurations": [
     {
       "type": "java",
-      "name": "AicodereviewApplication",
-      "request": "launch",
-      "mainClass": "com.anwar.aicodereview.AicodereviewApplication"
-    },
-    {
-      "type": "java",
-      "name": "Launch AicodereviewApplication",
+      "name": "Run Backend (Spring Boot)",
       "request": "launch",
       "mainClass": "com.anwar.aicodereview.AicodereviewApplication",
-      "projectName": "aicodereview",
       "cwd": "${workspaceFolder}/backend",
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "preLaunchTask": "backend: prepare classpath",
+      "classPaths": [
+        "${workspaceFolder}/backend/target/classes",
+        "${workspaceFolder}/backend/target/dependency/*"
+      ]
     }
   ]
 }

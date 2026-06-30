@@ -1,18 +1,22 @@
 package com.anwar.aicodereview.controller;
 
+import com.anwar.aicodereview.config.SecurityConfig;
 import com.anwar.aicodereview.service.CodeService;
 import com.anwar.aicodereview.service.VersionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = CodeReviewController.class)
+@Import(SecurityConfig.class)
 class CodeReviewControllerTest {
 
     @Autowired
@@ -29,6 +33,13 @@ class CodeReviewControllerTest {
         mockMvc.perform(get("/api/v1/code/hello"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value(containsString("backend")));
+                .andExpect(jsonPath("$.message").value(containsString("Backend")));
+    }
+
+    @Test
+    void invalidSubmissionIdShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post("/api/v1/code/analyze/undefined"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("BAD_REQUEST"));
     }
 }

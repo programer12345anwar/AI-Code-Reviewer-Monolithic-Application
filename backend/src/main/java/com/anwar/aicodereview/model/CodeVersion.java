@@ -1,18 +1,19 @@
 package com.anwar.aicodereview.model;
 
-import jakarta.persistence.*;
-<<<<<<< HEAD
-=======
-import lombok.Data;
->>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-<<<<<<< HEAD
-=======
-@Data
->>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
 @Entity
 @Table(name = "code_version")
 public class CodeVersion {
@@ -21,27 +22,26 @@ public class CodeVersion {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "submission_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "submission_id", nullable = false)
     private CodeSubmission submission;
 
-    @Column(name = "version_number")
+    @Column(name = "version_number", nullable = false)
     private Integer versionNumber;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String code;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String analysis;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
-    protected  void onCreate() {
+    protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-<<<<<<< HEAD
 
     public UUID getId() {
         return id;
@@ -90,21 +90,4 @@ public class CodeVersion {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-=======
->>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
 }
-
-/*
-CREATE TABLE code_version (
-        id BINARY(16) NOT NULL,
-submission_id BINARY(16) NOT NULL,
-version_number INT,
-code TEXT,
-analysis TEXT,
-created_at DATETIME(6),
-PRIMARY KEY (id),
-CONSTRAINT fk_code_version_submission
-FOREIGN KEY (submission_id)
-REFERENCES code_submission(id)
-);
- */

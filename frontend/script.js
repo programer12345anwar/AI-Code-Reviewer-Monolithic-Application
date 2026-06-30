@@ -2,6 +2,15 @@
 const API_BASE = 'http://localhost:9095/api/code';
 const USER_ID_KEY = 'ai_codereviewer_user_id';
 
+async function readApiData(response) {
+    const payload = await response.json();
+    return payload && Object.prototype.hasOwnProperty.call(payload, 'data') ? payload.data : payload;
+}
+
+function isValidId(id) {
+    return id && id !== 'undefined' && id !== 'null';
+}
+
 function getUserId() {
     let id = localStorage.getItem(USER_ID_KEY);
     if(!id) {
@@ -40,7 +49,7 @@ async function submitCode() {
     // call backend API
 
     try {
-        const reponse = await fetch(`${API_BASE}/upload`, {
+        const response = await fetch(`${API_BASE}/upload`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -51,8 +60,12 @@ async function submitCode() {
             })
         });
 
-        if(reponse.ok) {
-            const submission = await reponse.json();
+        if(response.ok) {
+            const submission = await readApiData(response);
+
+            if(!submission || !isValidId(submission.id)) {
+                throw new Error('Upload response did not include a submission id');
+            }
 
             // trigger analysis api
             await fetch(`${API_BASE}/analyze/${submission.id}`, {method: 'POST'});
@@ -87,7 +100,7 @@ async function loadReviewPage() {
     const params = new URLSearchParams(window.location.search)
     const submissionId = params.get('id')
 
-    if(!submissionId) return ;
+    if(!isValidId(submissionId)) return ;
     
     const analysisDiv = document.getElementById('aiAnalysis');
     const loadingDiv = document.getElementById('loadingAnalysis');
@@ -98,7 +111,9 @@ async function loadReviewPage() {
     const res = await fetch(`${API_BASE}/version/${submissionId}`);
 
     if(res.ok) {
-        const versions = await res.json();
+        const versions = await readApiData(res);
+        if(!Array.isArray(versions)) return;
+
         const latest = versions.sort((a, b) => b.versionNumber - a.versionNumber)[0];
 
         if(latest) {
@@ -126,6 +141,7 @@ async function submitNewVersion() {
     const code = document.getElementById('newVersionCode').value;
     const btn = document.getElementById('submitVersionBtn')
 
+    if(!isValidId(submissionId)) return alert('Missing submission id');
     if(!code.trim()) return alert('Please enter code');
 
     if(btn) {
@@ -145,7 +161,7 @@ async function submitNewVersion() {
             window.location.reload();
         }
         else {
-            alert('Failed to submit verison');
+            alert('Failed to submit version');
             if(btn) {
                 btn.disabled = false;
                 btn.innerText = 'Submit New Version';
@@ -154,7 +170,7 @@ async function submitNewVersion() {
     }
     catch(e) {
         console.error(e);
-        alert('Error submitting verison');
+        alert('Error submitting version');
         if(btn) {
             btn.disabled = false;
             btn.innerText = 'Submit New Version';
@@ -170,8 +186,13 @@ async function loadHistory() {
         const res = await fetch(`${API_BASE}/submissions/${USER_ID}`);
 
         if(res.ok) {
-            const submissions = await res.json();
+            const submissions = await readApiData(res);
             list.innerHTML = '';
+
+            if(!Array.isArray(submissions)) {
+                list.innerHTML = '<div class="card" style="text-align:center">Unable to load submissions.</div>';
+                return ;
+            }
 
             if(submissions.length === 0) {
                 list.innerHTML = '<div class="card" style="text-align:center"> No submissions yet. </div>';
@@ -207,11 +228,13 @@ async function loadComparisonPage() {
     const params = new URLSearchParams(window.location.search);
     const submissionId = params.get('id');
 
-    if(!submissionId) return;
+    if(!isValidId(submissionId)) return;
 
     const res = await fetch(`${API_BASE}/version/${submissionId}`);
     if(res.ok) {
-        const versions = await res.json();
+        const versions = await readApiData(res);
+        if(!Array.isArray(versions)) return;
+
         const vA = document.getElementById('versionA');
         const vB = document.getElementById('versionB');
 
@@ -238,7 +261,7 @@ async function updateComparison() {
         });
 
         if(res.ok) {
-            const data = await res.json();
+            const data = await readApiData(res);
             document.getElementById('codeA').innerText = data.versionA.code;
             document.getElementById('codeB').innerText = data.versionB.code;
         } 
