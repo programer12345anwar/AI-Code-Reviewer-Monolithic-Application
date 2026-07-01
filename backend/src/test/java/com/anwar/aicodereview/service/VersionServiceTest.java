@@ -1,4 +1,4 @@
-package com.anwar.aicodereview.service;
+package test.java.com.anwar.aicodereview.service;
 
 import com.anwar.aicodereview.model.CodeSubmission;
 import com.anwar.aicodereview.model.CodeVersion;

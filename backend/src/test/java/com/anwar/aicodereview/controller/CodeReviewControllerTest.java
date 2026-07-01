@@ -1,4 +1,4 @@
-package com.anwar.aicodereview.controller;
+package test.java.com.anwar.aicodereview.controller;
 
 import com.anwar.aicodereview.config.SecurityConfig;
 import com.anwar.aicodereview.model.CodeSubmission;

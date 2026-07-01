@@ -4,11 +4,30 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
+
   jpa:
     hibernate:
       ddl-auto: create-drop
+
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+
   flyway:
     enabled: false
+
+ai:
+  provider: gemini
+
+  gemini:
+    api-key: dummy-api-key
+    endpoint: https://dummy-url
+
+jwt:
+  secret: test-secret-key-test-secret-key-test-secret-key
+  expiration-ms: 3600000
+  refresh-expiration-ms: 604800000
+
+logging:
+  level:
+    root: WARN
