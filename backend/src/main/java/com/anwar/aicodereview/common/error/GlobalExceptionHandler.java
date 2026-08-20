@@ -1,5 +1,7 @@
 package com.anwar.aicodereview.common.error;
 
+import com.anwar.aicodereview.exception.AiAnalysisException;
+import com.anwar.aicodereview.exception.AiProviderConfigurationException;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         String message = "Invalid value for path or query parameter: " + ex.getName();
         return ResponseEntity.badRequest().body(new ApiErrorResponse("BAD_REQUEST", message, List.of(), Instant.now()));
+    }
+
+    @ExceptionHandler(AiProviderConfigurationException.class)
+    public ResponseEntity<ApiErrorResponse> handleAiProviderConfigurationException(AiProviderConfigurationException ex) {
+        log.error("AI provider is not configured correctly: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new ApiErrorResponse("AI_PROVIDER_CONFIGURATION_ERROR", ex.getMessage(), List.of(), Instant.now()));
+    }
+
+    @ExceptionHandler(AiAnalysisException.class)
+    public ResponseEntity<ApiErrorResponse> handleAiAnalysisException(AiAnalysisException ex) {
+        log.error("AI analysis failed", ex);
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(new ApiErrorResponse("AI_ANALYSIS_ERROR", ex.getMessage(), List.of(), Instant.now()));
     }
 
     @ExceptionHandler(RuntimeException.class)

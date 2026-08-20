@@ -1,4 +1,4 @@
-postman request POST 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=youApiKey' \
+postman request POST 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=youApiKey' \
   --header 'Content-Type: application/json' \
   --body '{
   "contents": [{

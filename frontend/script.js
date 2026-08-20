@@ -7,8 +7,21 @@ async function readApiData(response) {
     return payload && Object.prototype.hasOwnProperty.call(payload, 'data') ? payload.data : payload;
 }
 
+async function readApiError(response, fallbackMessage) {
+    try {
+        const payload = await response.json();
+        return payload?.message || fallbackMessage;
+    } catch(e) {
+        return fallbackMessage;
+    }
+}
+
 function isValidId(id) {
     return id && id !== 'undefined' && id !== 'null';
+}
+
+function isStoredAnalysisError(analysis) {
+    return typeof analysis === 'string' && analysis.trim().startsWith('Error:');
 }
 
 function getUserId() {
@@ -68,7 +81,10 @@ async function submitCode() {
             }
 
             // trigger analysis api
-            await fetch(`${API_BASE}/analyze/${submission.id}`, {method: 'POST'});
+            const analysisResponse = await fetch(`${API_BASE}/analyze/${submission.id}`, {method: 'POST'});
+            if(!analysisResponse.ok) {
+                throw new Error(await readApiError(analysisResponse, 'Analysis failed'));
+            }
             window.location.href = `review.html?id=${submission.id}`;
 
             // do something
@@ -77,7 +93,7 @@ async function submitCode() {
         }
     } catch(e) {
         console.error(e);
-        alert('Error connection to server');
+        alert(e.message || 'Error connecting to server');
     } finally {
         analyzeBtn.disabled = false;
         analyzeBtn.innerText = 'Analyze Code';
@@ -126,6 +142,20 @@ async function loadReviewPage() {
 
                 setTimeout(() => loadReviewPage(), 2000);
             }
+            else if(isStoredAnalysisError(latest.analysis)) {
+                loadingDiv.style.display = 'block';
+                analysisDiv.style.display = 'none';
+
+                const analysisResponse = await fetch(`${API_BASE}/analyze/${submissionId}`, {method: 'POST'});
+                if(analysisResponse.ok) {
+                    setTimeout(() => loadReviewPage(), 500);
+                }
+                else {
+                    loadingDiv.style.display = 'none';
+                    analysisDiv.style.display = 'block';
+                    analysisDiv.innerText = await readApiError(analysisResponse, latest.analysis);
+                }
+            }
             else {
                 loadingDiv.style.display = 'none';
                 analysisDiv.style.display = 'block';
@@ -157,7 +187,10 @@ async function submitNewVersion() {
         });
 
         if(res.ok) {
-            await fetch(`${API_BASE}/analyze/${submissionId}`, {method: 'POST'});
+            const analysisResponse = await fetch(`${API_BASE}/analyze/${submissionId}`, {method: 'POST'});
+            if(!analysisResponse.ok) {
+                throw new Error(await readApiError(analysisResponse, 'Analysis failed'));
+            }
 
             window.location.reload();
         }

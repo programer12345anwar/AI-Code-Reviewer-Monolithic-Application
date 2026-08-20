@@ -7,6 +7,7 @@
 - JWT_EXPIRATION_MS: JWT lifetime in milliseconds
 - JWT_REFRESH_EXPIRATION_MS: Refresh token lifetime
 - GOOGLE_API_KEY: Gemini API key
+- GEMINI_MODEL: Gemini model name. Defaults to gemini-3.6-flash.
 - CORS_ALLOWED_ORIGINS: Comma-separated allowed origins
 - SERVER_PORT: Port for the Spring Boot application
 - REDIS_HOST / REDIS_PORT: Redis connection settings

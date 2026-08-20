@@ -1,5 +1,6 @@
-package test.java.com.anwar.aicodereview.service;
+package com.anwar.aicodereview.service;
 
+import com.anwar.aicodereview.exception.AiProviderConfigurationException;
 import com.anwar.aicodereview.model.CodeSubmission;
 import com.anwar.aicodereview.model.CodeVersion;
 import com.anwar.aicodereview.repository.CodeSubmissionReporsitory;
@@ -14,6 +15,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,5 +52,23 @@ class VersionServiceTest {
         CodeVersion created = versionService.createNextVersion(submissionId, "new code");
 
         assertEquals(3, created.getVersionNumber());
+    }
+
+    @Test
+    void analyzeVersionShouldNotPersistConfigurationErrorsAsAnalysis() {
+        UUID versionId = UUID.randomUUID();
+        CodeVersion version = new CodeVersion();
+        version.setId(versionId);
+        version.setCode("class Calculator {}");
+        version.setAnalysis("Pending analysis...");
+
+        when(versionRepository.findById(versionId)).thenReturn(Optional.of(version));
+        when(aiAnalysisService.analyzeCode(version.getCode()))
+                .thenThrow(new AiProviderConfigurationException("Google API Key is missing. Please configure GOOGLE_API_KEY."));
+
+        assertThrows(AiProviderConfigurationException.class, () -> versionService.analyzeVersion(versionId));
+
+        assertEquals("Pending analysis...", version.getAnalysis());
+        verify(versionRepository, never()).save(any(CodeVersion.class));
     }
 }

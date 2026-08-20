@@ -178,10 +178,10 @@ spring.datasource.password=your_password
 
 spring.jpa.hibernate.ddl-auto=update
 
-gemini.api.key=YOUR_OPENAI_API_KEY
+GOOGLE_API_KEY=your_gemini_api_key
 
 
-⚠️ Never commit your OpenAI API key to GitHub
+⚠️ Never commit your Gemini API key to GitHub
 
 📡 REST API Endpoints
 Submit Code for Review
