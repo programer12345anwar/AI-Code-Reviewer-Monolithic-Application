@@ -1,4 +1,3 @@
-HEAD
 # AI Code Reviewer
 
 A production-oriented monolithic Spring Boot application for submitting code, tracking versions, and receiving AI-powered code review feedback.
