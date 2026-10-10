@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+HEAD
 # AI Code Reviewer
 
 A production-oriented monolithic Spring Boot application for submitting code, tracking versions, and receiving AI-powered code review feedback.
@@ -246,4 +246,3 @@ Peer code review assistance
 Md Anwar Alam
 B.Tech Computer Science
 Java | Spring Boot | MySQL | AI Integration
->>>>>>> e4dc59351648e69e971e1cae1ba10ff0b8de3ae8
