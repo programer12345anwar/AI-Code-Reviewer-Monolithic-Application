@@ -165,6 +165,108 @@ textarea {
     font-size: 0.9rem;
 }
 
+.auth-card {
+    width: min(100%, 32rem);
+    margin: clamp(1.5rem, 8vh, 5rem) auto 2rem;
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+.auth-card h1 {
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
+    line-height: 1.2;
+}
+
+.auth-description {
+    color: var(--text-muted);
+    margin-bottom: 1.75rem;
+}
+
+.auth-form {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.auth-form label {
+    font-weight: 600;
+}
+
+.auth-form input {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: rgba(15, 23, 42, 0.7);
+    color: var(--text-main);
+    font: inherit;
+}
+
+.auth-form input:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.auth-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.auth-actions .btn {
+    min-width: 0;
+    min-height: 3rem;
+    padding-inline: 0.75rem;
+}
+
+#authMessage {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+    header {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .logo {
+        font-size: 1.25rem;
+    }
+
+    header nav {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: flex-start;
+        gap: clamp(0.75rem, 4vw, 1.5rem);
+    }
+
+    header nav a {
+        margin-left: 0;
+    }
+
+    header nav .btn {
+        margin-left: auto;
+        padding: 0.6rem 0.85rem;
+    }
+
+    main {
+        margin-top: 1rem;
+        padding-inline: 0.75rem;
+    }
+
+    .auth-card {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0.75rem;
+    }
+
+    .auth-actions {
+        grid-template-columns: 1fr;
+    }
+}
 
 
 

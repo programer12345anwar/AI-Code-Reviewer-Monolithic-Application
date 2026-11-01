@@ -19,15 +19,15 @@
     </header>
 
     <main class="fade-in">
-        <section class="card" id="authPanel" hidden>
-            <h1>Sign in to your account</h1>
-            <p style="color: var(--text-muted);">Your code reviews are private to your account.</p>
-            <form id="authForm" data-mode="login">
+        <section class="card auth-card" id="authPanel" hidden>
+            <h1 id="authHeading">Sign in to your account</h1>
+            <p class="auth-description">Your code reviews are private to your account.</p>
+            <form class="auth-form" id="authForm" data-mode="login">
                 <label for="authEmail">Email</label>
                 <input id="authEmail" type="email" autocomplete="email" required maxlength="320">
                 <label for="authPassword">Password</label>
                 <input id="authPassword" type="password" autocomplete="current-password" required minlength="1" maxlength="72">
-                <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem;">
+                <div class="auth-actions">
                     <button class="btn btn-primary" id="authSubmitButton" type="submit">Sign in</button>
                     <button class="btn btn-secondary" id="authModeButton" type="button" onclick="toggleAuthMode()">Create an account</button>
                 </div>

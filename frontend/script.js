@@ -81,11 +81,14 @@ function setAuthMode(mode) {
     const submitButton = document.getElementById('authSubmitButton');
     const modeButton = document.getElementById('authModeButton');
     const passwordInput = document.getElementById('authPassword');
-    if(!submitButton || !modeButton || !passwordInput) return;
+    const heading = document.getElementById('authHeading');
+    if(!submitButton || !modeButton || !passwordInput || !heading) return;
 
     submitButton.innerText = registerMode ? 'Create account' : 'Sign in';
     modeButton.innerText = registerMode ? 'I already have an account' : 'Create an account';
     passwordInput.minLength = registerMode ? 12 : 1;
+    passwordInput.autocomplete = registerMode ? 'new-password' : 'current-password';
+    heading.innerText = registerMode ? 'Create your account' : 'Sign in to your account';
     document.getElementById('authForm').dataset.mode = mode;
     showAuthMessage('');
 }
