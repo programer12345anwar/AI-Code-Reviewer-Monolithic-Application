@@ -47,7 +47,7 @@ Protected API calls require `Authorization: Bearer <accessToken>`. Access tokens
 JSON requests are capped at 256 KiB and source submissions at 50,000 characters.
 
 1. Create a Render PostgreSQL database and a Docker Web Service from this repository. `render.yaml` provides the service definition and health check.
-2. Set the environment variables listed in [docs/environment-variables.md](docs/environment-variables.md) in the Render service. Use the database's internal connection host when possible; construct `DB_URL` as a JDBC URL, for example `jdbc:postgresql://<internal-host>:5432/<database>`. For external connections, use the provider's SSL-required JDBC URL.
+2. Set the environment variables listed in [docs/environment-variables.md](docs/environment-variables.md) in the Render service. Use the database's internal connection host when possible. `DB_URL` accepts either a JDBC URL such as `jdbc:postgresql://<internal-host>:5432/<database>` or Render's `postgres://...` connection URI. For external connections, use the provider's SSL-required URL.
 3. Set `SPRING_PROFILES_ACTIVE=prod`. The app uses the `postgresql` Flyway migration directory and validates the migrated schema; it does not use Hibernate schema updates.
 4. Generate `JWT_SECRET` as Base64 of at least 32 cryptographically random bytes. Set the exact production Vercel origin in `CORS_ALLOWED_ORIGINS` (scheme and host only, no path or trailing slash).
 5. Configure `GOOGLE_API_KEY` in Render. Secrets belong only in Render's environment settings.

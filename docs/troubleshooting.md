@@ -4,7 +4,7 @@
 
 - Confirm `SPRING_PROFILES_ACTIVE=prod`.
 - Check the startup log for unresolved `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, or `CORS_ALLOWED_ORIGINS`.
-- Verify `DB_URL` starts with `jdbc:postgresql://` and points to a reachable PostgreSQL database.
+- Verify `DB_URL` is either a `jdbc:postgresql://` URL or Render's `postgres://` connection URI and points to a reachable PostgreSQL database. The application converts Render's URI format at startup.
 - Review Flyway startup errors before retrying. Do not enable Hibernate `ddl-auto=update` to work around a migration failure.
 - Confirm Render health check uses `/actuator/health`.
 

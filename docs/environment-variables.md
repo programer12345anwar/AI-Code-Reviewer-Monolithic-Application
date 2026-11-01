@@ -5,9 +5,9 @@ Configure these values in Render's backend service. Do not commit credentials.
 | Variable | Required | Purpose |
 |---|---|---|
 | `SPRING_PROFILES_ACTIVE` | Yes | Set to `prod` on Render; selects PostgreSQL configuration and migrations. |
-| `DB_URL` | Yes | JDBC PostgreSQL URL, e.g. `jdbc:postgresql://<host>:5432/<database>`. Use the database provider's SSL-required URL for external connections. |
-| `DB_USERNAME` | Yes | PostgreSQL account username. |
-| `DB_PASSWORD` | Yes | PostgreSQL account password. |
+| `DB_URL` | Yes | PostgreSQL JDBC URL (`jdbc:postgresql://<host>:5432/<database>`) or Render connection URI (`postgres://...`). The app converts Render URIs to JDBC format. Use the database provider's SSL-required URL for external connections. |
+| `DB_USERNAME` | Conditional | PostgreSQL account username. Required with a JDBC URL; optional when included in the `postgres://` connection URI. |
+| `DB_PASSWORD` | Conditional | PostgreSQL account password. Required with a JDBC URL; optional when included in the `postgres://` connection URI. |
 | `JWT_SECRET` | Yes | Base64-encoded cryptographically random key of at least 32 bytes. |
 | `CORS_ALLOWED_ORIGINS` | Yes | Comma-separated exact browser origins, e.g. `https://<your-vercel-domain>`. Do not include a path or trailing slash. |
 | `GOOGLE_API_KEY` | Yes for analysis | Gemini API credential; stored only in backend environment. |
