@@ -14,11 +14,28 @@
         <nav>
             <a href="index.html" class="active">Review</a>
             <a href="history.html">History</a>
+            <button type="button" class="btn btn-secondary" id="signOutButton" onclick="signOut()" hidden>Sign out</button>
         </nav>
     </header>
 
     <main class="fade-in">
+        <section class="card" id="authPanel" hidden>
+            <h1>Sign in to your account</h1>
+            <p style="color: var(--text-muted);">Your code reviews are private to your account.</p>
+            <form id="authForm" data-mode="login">
+                <label for="authEmail">Email</label>
+                <input id="authEmail" type="email" autocomplete="email" required maxlength="320">
+                <label for="authPassword">Password</label>
+                <input id="authPassword" type="password" autocomplete="current-password" required minlength="1" maxlength="72">
+                <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem;">
+                    <button class="btn btn-primary" id="authSubmitButton" type="submit">Sign in</button>
+                    <button class="btn btn-secondary" id="authModeButton" type="button" onclick="toggleAuthMode()">Create an account</button>
+                </div>
+                <p id="authMessage" role="status" aria-live="polite"></p>
+            </form>
+        </section>
 
+        <section id="reviewPanel" hidden>
         <div class="card" style="text-align: center; padding: 4rem 2rem;">
             <h1> Elevate Your Code Quality</h1>
 
@@ -52,11 +69,14 @@
 
 
         </div>
+        </section>
 
     </main>
 
+    <script src="api-config.js"></script>
     <script src="script.js"></script>
-
-
+    <script>
+        document.addEventListener('DOMContentLoaded', initializeAuthentication);
+    </script>
 </body>
 </html>

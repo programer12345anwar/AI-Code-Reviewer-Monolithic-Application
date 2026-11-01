@@ -1,9 +1,17 @@
-postman request POST 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=youApiKey' \
-  --header 'Content-Type: application/json' \
-  --body '{
-  "contents": [{
-    "parts": [
-      { "text": "Hello Gemini" }
-    ]
-  }]
-}'
+Use the backend API through its configured Render service URL. Do not call Gemini
+directly from the browser or place a provider API key in frontend code.
+
+Set BACKEND_URL to the Render service origin and use an email/password you control:
+
+1. Register or sign in:
+
+curl.exe -X POST "%BACKEND_URL%/api/v1/auth/login" ^
+  -H "Content-Type: application/json" ^
+  --data-raw "{\"email\":\"<your-email>\",\"password\":\"<your-password>\"}"
+
+2. Copy `data.accessToken` from the response, then submit code:
+
+curl.exe -X POST "%BACKEND_URL%/api/v1/code/upload" ^
+  -H "Content-Type: application/json" ^
+  -H "Authorization: Bearer <access-token>" ^
+  --data-raw "{\"filename\":\"Example.java\",\"language\":\"java\",\"code\":\"class Example {}\"}"

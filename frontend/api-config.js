@@ -1,3 +1,2 @@
-// Replace this value with the public URL of the deployed Spring Boot backend.
-// Example: window.AI_CODE_REVIEWER_API_URL = 'https://api.example.com';
-window.AI_CODE_REVIEWER_API_URL = 'http://localhost:9095';
+// Set this to the deployed Render service URL (for example, https://your-service.onrender.com).
+window.AI_CODE_REVIEWER_API_URL = window.AI_CODE_REVIEWER_API_URL || '';

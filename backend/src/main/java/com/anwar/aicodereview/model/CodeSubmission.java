@@ -28,7 +28,7 @@ public class CodeSubmission {
     @Column(nullable = false, length = 50)
     private String language;
 
-    @Column(nullable = false, columnDefinition = "LONGTEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String code;
 
     @Column(name = "created_at", nullable = false)

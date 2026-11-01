@@ -11,5 +11,13 @@ public interface CodeVersonRepository extends JpaRepository<CodeVersion, UUID> {
 
     List<CodeVersion> findBySubmissionId(UUID submissionId);
 
+    List<CodeVersion> findBySubmission_IdAndSubmission_UserIdOrderByVersionNumberAsc(
+            UUID submissionId, UUID userId);
+
     Optional<CodeVersion> findTopBySubmissionIdOrderByVersionNumberDesc(UUID submissionId);
+
+    Optional<CodeVersion> findTopBySubmission_IdAndSubmission_UserIdOrderByVersionNumberDesc(
+            UUID submissionId, UUID userId);
+
+    Optional<CodeVersion> findByIdAndSubmission_UserId(UUID id, UUID userId);
 }

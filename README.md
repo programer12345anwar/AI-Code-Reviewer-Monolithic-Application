@@ -1,247 +1,71 @@
 # AI Code Reviewer
 
-A production-oriented monolithic Spring Boot application for submitting code, tracking versions, and receiving AI-powered code review feedback.
+A Java 17 / Spring Boot 3.3 monolith with a static HTML/JavaScript frontend. Users register or sign in, submit source code, and receive Gemini-powered analysis. Submission and version data is scoped to the authenticated account.
 
-## Features
-- Submit code and create initial versions
-- Review latest version and compare versions
-- REST API with versioned endpoints
-- Validation and structured error handling
-- OpenAPI documentation
-- Docker and CI/CD scaffolding
+## Architecture
 
-## Tech stack
-- Java 21
-- Spring Boot 3.3
-- Spring Data JPA
-- MySQL
-- Spring Security
-- Flyway
-- OpenAPI/Swagger
-- Docker
+- Frontend: static files in `frontend/`
+- Backend: Spring MVC, Spring Security (stateless JWT), Spring Data JPA
+- Local development database: MySQL
+- Production database: PostgreSQL with a separate Flyway migration
+- AI provider: Google Gemini through a timeout-limited HTTP client
 
-## Getting started
-1. Start MySQL and ensure a database named `aicodereview` exists.
-2. Configure environment variables such as `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `GOOGLE_API_KEY`.
-3. Run:
-   ```bash
-   cd backend
-   ./mvnw spring-boot:run
+## Local development
+
+1. Install Java 17 and Docker Desktop.
+2. Copy `.env.example` to `.env` and set local MySQL details, a Base64-encoded JWT key (at least 32 random bytes), and `GOOGLE_API_KEY`.
+3. Start the development database and backend:
+
+   ```powershell
+   docker compose up --build
    ```
-4. Open the frontend files directly in a browser or serve them with a static server.
 
-## API docs
-- Swagger UI: http://localhost:9095/swagger-ui/index.html
-- OpenAPI JSON: http://localhost:9095/v3/api-docs
+4. Configure `frontend/api-config.js` to `http://localhost:9095` and serve `frontend/` through a local static web server. The local frontend origin must be included in `CORS_ALLOWED_ORIGINS`.
+5. Open the frontend. Register using an email and a password of at least 12 characters.
 
-## Docker
-```bash
-docker compose up --build
+The backend API listens on port 9095 locally. Health: `GET /actuator/health`. OpenAPI documentation is available outside the production profile at `/swagger-ui/index.html`.
+
+## API endpoints
+
+| Method | Path | Access |
+|---|---|---|
+| POST | `/api/v1/auth/register` | Public |
+| POST | `/api/v1/auth/login` | Public |
+| GET | `/api/v1/code/hello` | Public |
+| POST | `/api/v1/code/upload` | Authenticated |
+| POST | `/api/v1/code/analyze/{submissionId}` | Owner |
+| GET | `/api/v1/code/version/{submissionId}` | Owner |
+| POST | `/api/v1/code/version/{submissionId}/new` | Owner |
+| GET | `/api/v1/code/submissions/me?page=0&size=20` | Authenticated, paginated |
+| POST | `/api/v1/code/compare` | Owner |
+| GET | `/actuator/health` | Public, status only |
+
+Protected API calls require `Authorization: Bearer <accessToken>`. Access tokens are short-lived; sign in again after expiration.
+
+## Deploy backend to Render
+
+JSON requests are capped at 256 KiB and source submissions at 50,000 characters.
+
+1. Create a Render PostgreSQL database and a Docker Web Service from this repository. `render.yaml` provides the service definition and health check.
+2. Set the environment variables listed in [docs/environment-variables.md](docs/environment-variables.md) in the Render service. Use the database's internal connection host when possible; construct `DB_URL` as a JDBC URL, for example `jdbc:postgresql://<internal-host>:5432/<database>`. For external connections, use the provider's SSL-required JDBC URL.
+3. Set `SPRING_PROFILES_ACTIVE=prod`. The app uses the `postgresql` Flyway migration directory and validates the migrated schema; it does not use Hibernate schema updates.
+4. Generate `JWT_SECRET` as Base64 of at least 32 cryptographically random bytes. Set the exact production Vercel origin in `CORS_ALLOWED_ORIGINS` (scheme and host only, no path or trailing slash).
+5. Configure `GOOGLE_API_KEY` in Render. Secrets belong only in Render's environment settings.
+6. Deploy and wait for Render's `/actuator/health` check. Confirm the service starts, Flyway completes, and registration/login work before routing production traffic.
+
+No live Render or database connection has been verified from this repository workspace. The first production deployment runs the PostgreSQL Flyway migration and creates the schema. No existing production data was reported; do not point this service at a database containing data unless the schema and migration have been reviewed first.
+
+## Deploy frontend to Vercel
+
+The frontend is plain static HTML/JavaScript, not a Vite application, so Vite environment variables are not read at runtime. After the Render service is deployed, set `window.AI_CODE_REVIEWER_API_URL` in `frontend/api-config.js` to the actual HTTPS Render service URL (origin only), commit/push that configuration, and redeploy Vercel. Do not put database, JWT-signing, or Gemini credentials in frontend files or Vercel client-side variables.
+
+## Tests and build
+
+From `backend/`:
+
+```powershell
+.\mvnw.cmd clean test
+.\mvnw.cmd clean package -DskipTests
 ```
-=======
-🧠 AI Code Reviewer Application
 
-An AI-powered Code Reviewer web application that analyzes source code and provides intelligent suggestions, recommendations, and best practices using the Gemini API.
-Users can drag & drop files or paste code, receive instant feedback, and view their review history later.
-
-🚀 Features
-
-🔍 AI-Based Code Review
-
-Detects code issues, improvements, and best practices
-
-Provides clean code suggestions and explanations
-
-📂 Multiple Input Methods
-
-Drag & Drop code files
-
-Copy & Paste code directly into the editor
-
-🕒 Persistent Review History
-
-Stores previous reviews in MySQL
-
-Users can revisit and compare past code reviews
-
-🌐 Modern Web Interface
-
-Responsive UI using HTML, CSS, and JavaScript
-
-Clean editor-like experience
-
-🔐 Secure Backend
-
-Spring Boot REST APIs
-
-Environment-based Gemini API key management
-
-🏗️ Tech Stack
-Frontend
-
-HTML5
-
-CSS3
-
-JavaScript (Vanilla JS)
-
-Drag & Drop API
-
-Backend
-
-Java
-
-Spring Boot
-
-Spring Web
-
-Spring Data JPA
-
-REST APIs
-
-Database
-
-MySQL
-
-AI Integration
-
-Gemini API (for code analysis and suggestions)
-
-📐 System Architecture
-Frontend (HTML/CSS/JS)
-        |
-        | REST API
-        v
-Spring Boot Backend
-        |
-        | JPA / Hibernate
-        v
-      MySQL
-        |
-        v
-   Gemini API
-
-🖥️ Application Flow
-
-User uploads a code file or pastes code into the editor
-
-Frontend sends code to backend API
-
-Backend calls Gemini API for analysis
-
-AI response is processed and stored in MySQL
-
-Suggestions are returned to the UI
-
-User can view review history anytime
-
-📂 Project Structure
-Backend (Spring Boot)
-ai-code-reviewer-backend
- ┣ 📂 controller
- ┃ ┗ CodeReviewController.java
- ┣ 📂 service
- ┃ ┣ CodeReviewService.java
- ┃ ┗ OpenAiService.java
- ┣ 📂 repository
- ┃ ┗ ReviewHistoryRepository.java
- ┣ 📂 entity
- ┃ ┗ ReviewHistory.java
- ┣ 📂 dto
- ┃ ┗ CodeReviewRequest.java
- ┣ 📂 config
- ┃ ┗ GeminiConfig.java
- ┗ AiCodeReviewerApplication.java
-
-Frontend
-ai-code-reviewer-frontend
- ┣ 📄 index.html
- ┣ 📄 style.css
- ┗ 📄 script.js
-
-🗄️ Database Schema
-review_history Table
-Column Name	Type	Description
-id	BIGINT	Primary Key
-code	TEXT	User-submitted code
-suggestion	TEXT	AI-generated suggestions
-language	VARCHAR	Programming language
-created_at	TIMESTAMP	Review time
-🔑 Environment Variables
-
-Create an application.properties file:
-
-spring.datasource.url=jdbc:mysql://localhost:3306/ai_code_reviewer
-spring.datasource.username=root
-spring.datasource.password=your_password
-
-spring.jpa.hibernate.ddl-auto=update
-
-GOOGLE_API_KEY=your_gemini_api_key
-
-
-⚠️ Never commit your Gemini API key to GitHub
-
-📡 REST API Endpoints
-Submit Code for Review
-POST /api/review
-
-
-Request Body
-
-{
-  "code": "public class HelloWorld { }",
-  "language": "Java"
-}
-
-
-Response
-
-{
-  "suggestions": "Use meaningful class names and add comments."
-}
-
-Get Review History
-GET /api/review/history
-
-🎨 UI Features
-
-Drag & Drop upload zone
-
-Code text editor
-
-Syntax-friendly formatting
-
-Review output panel
-
-History list with timestamps
-
-🧪 Future Enhancements
-
-🔐 User authentication (JWT)
-
-🌈 Syntax highlighting (Monaco Editor)
-
-📊 Code quality score
-
-🧠 Multi-model AI support
-
-🗂️ Filter history by language or date
-
-📥 Download review reports (PDF)
-
-📌 Use Cases
-
-Developers reviewing their code
-
-Freshers preparing for interviews
-
-Learning clean code & best practices
-
-Peer code review assistance
-
-🧑‍💻 Author
-
-Md Anwar Alam
-B.Tech Computer Science
-Java | Spring Boot | MySQL | AI Integration
+Tests use H2 and mocked Gemini responses. A live Render PostgreSQL migration, external Gemini call, and deployed Vercel integration require environment credentials and must be validated after deployment.

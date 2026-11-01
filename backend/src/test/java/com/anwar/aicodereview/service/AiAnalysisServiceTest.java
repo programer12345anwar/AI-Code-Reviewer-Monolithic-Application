@@ -1,11 +1,14 @@
 package com.anwar.aicodereview.service;
 
+import com.anwar.aicodereview.exception.AiAnalysisException;
 import com.anwar.aicodereview.exception.AiProviderConfigurationException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -55,21 +58,21 @@ class AiAnalysisServiceTest {
         );
         ReflectionTestUtils.setField(aiAnalysisService, "geminiEndpoint", "");
 
-        Map<String, Object> responseBody = Map.of(
+        JsonNode responseBody = new ObjectMapper().valueToTree(Map.of(
                 "candidates",
                 List.of(Map.of(
                         "content",
                         Map.of("parts", List.of(Map.of("text", "analysis result")))
                 ))
-        );
+        ));
 
-        when(restTemplate.postForEntity(any(URI.class), any(HttpEntity.class), eq(Map.class)))
-                .thenReturn(ResponseEntity.ok(responseBody));
+        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(JsonNode.class)))
+                .thenReturn(responseBody);
 
         String result = aiAnalysisService.analyzeCode("class Calculator {}");
 
         ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
-        verify(restTemplate).postForEntity(uriCaptor.capture(), any(HttpEntity.class), eq(Map.class));
+        verify(restTemplate).postForObject(uriCaptor.capture(), any(HttpEntity.class), eq(JsonNode.class));
         assertEquals("analysis result", result);
         assertEquals(
                 "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=test-api-key",
@@ -88,24 +91,56 @@ class AiAnalysisServiceTest {
                 "https://example.test/custom-gemini:generateContent"
         );
 
-        Map<String, Object> responseBody = Map.of(
+        JsonNode responseBody = new ObjectMapper().valueToTree(Map.of(
                 "candidates",
                 List.of(Map.of(
                         "content",
                         Map.of("parts", List.of(Map.of("text", "analysis result")))
                 ))
-        );
+        ));
 
-        when(restTemplate.postForEntity(any(URI.class), any(HttpEntity.class), eq(Map.class)))
-                .thenReturn(ResponseEntity.ok(responseBody));
+        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(JsonNode.class)))
+                .thenReturn(responseBody);
 
         aiAnalysisService.analyzeCode("class Calculator {}");
 
         ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
-        verify(restTemplate).postForEntity(uriCaptor.capture(), any(HttpEntity.class), eq(Map.class));
+        verify(restTemplate).postForObject(uriCaptor.capture(), any(HttpEntity.class), eq(JsonNode.class));
         assertEquals(
                 "https://example.test/custom-gemini:generateContent?key=test-api-key",
                 uriCaptor.getValue().toString()
         );
+    }
+
+    @Test
+    void analyzeCodeShouldRejectMalformedProviderResponses() {
+        RestTemplate restTemplate = mock(RestTemplate.class);
+        AiAnalysisService aiAnalysisService = new AiAnalysisService(restTemplate);
+        ReflectionTestUtils.setField(aiAnalysisService, "apiKey", "test-api-key");
+        ReflectionTestUtils.setField(aiAnalysisService, "geminiEndpoint", "https://example.test/generate");
+        JsonNode responseBody = new ObjectMapper().createObjectNode().set("candidates",
+                new ObjectMapper().createArrayNode());
+        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(JsonNode.class)))
+                .thenReturn(responseBody);
+
+        AiAnalysisException exception = assertThrows(AiAnalysisException.class,
+                () -> aiAnalysisService.analyzeCode("class Example {}"));
+
+        assertEquals("AI provider returned no analysis candidates", exception.getMessage());
+    }
+
+    @Test
+    void analyzeCodeShouldReturnSafeMessageOnProviderTimeout() {
+        RestTemplate restTemplate = mock(RestTemplate.class);
+        AiAnalysisService aiAnalysisService = new AiAnalysisService(restTemplate);
+        ReflectionTestUtils.setField(aiAnalysisService, "apiKey", "test-api-key");
+        ReflectionTestUtils.setField(aiAnalysisService, "geminiEndpoint", "https://example.test/generate");
+        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(JsonNode.class)))
+                .thenThrow(new ResourceAccessException("Read timed out"));
+
+        AiAnalysisException exception = assertThrows(AiAnalysisException.class,
+                () -> aiAnalysisService.analyzeCode("class Example {}"));
+
+        assertEquals("Unable to communicate with the AI provider", exception.getMessage());
     }
 }

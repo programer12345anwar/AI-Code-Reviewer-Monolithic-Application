@@ -39,34 +39,40 @@ class VersionServiceTest {
     @Test
     void createNextVersionShouldIncrementVersionNumber() {
         UUID submissionId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         CodeSubmission submission = new CodeSubmission();
         submission.setId(submissionId);
 
         CodeVersion latest = new CodeVersion();
         latest.setVersionNumber(2);
 
-        when(submissionRepository.findById(submissionId)).thenReturn(Optional.of(submission));
+        when(submissionRepository.findByIdAndUserId(submissionId, userId)).thenReturn(Optional.of(submission));
         when(versionRepository.findTopBySubmissionIdOrderByVersionNumberDesc(submissionId)).thenReturn(Optional.of(latest));
         when(versionRepository.save(org.mockito.ArgumentMatchers.any(CodeVersion.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        CodeVersion created = versionService.createNextVersion(submissionId, "new code");
+        CodeVersion created = versionService.createNextVersion(submissionId, userId, "new code");
 
         assertEquals(3, created.getVersionNumber());
     }
 
     @Test
-    void analyzeVersionShouldNotPersistConfigurationErrorsAsAnalysis() {
+    void analyzeLatestVersionShouldNotPersistConfigurationErrorsAsAnalysis() {
         UUID versionId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID submissionId = UUID.randomUUID();
         CodeVersion version = new CodeVersion();
         version.setId(versionId);
         version.setCode("class Calculator {}");
         version.setAnalysis("Pending analysis...");
+        version.setVersionNumber(1);
 
-        when(versionRepository.findById(versionId)).thenReturn(Optional.of(version));
+        when(versionRepository.findTopBySubmission_IdAndSubmission_UserIdOrderByVersionNumberDesc(submissionId, userId))
+                .thenReturn(Optional.of(version));
         when(aiAnalysisService.analyzeCode(version.getCode()))
                 .thenThrow(new AiProviderConfigurationException("Google API Key is missing. Please configure GOOGLE_API_KEY."));
 
-        assertThrows(AiProviderConfigurationException.class, () -> versionService.analyzeVersion(versionId));
+        assertThrows(AiProviderConfigurationException.class,
+                () -> versionService.analyzeLatestVersion(submissionId, userId));
 
         assertEquals("Pending analysis...", version.getAnalysis());
         verify(versionRepository, never()).save(any(CodeVersion.class));

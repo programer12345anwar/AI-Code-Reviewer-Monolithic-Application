@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,35 +34,33 @@ public class VersionService {
         this.aiAnalysisService = aiAnalysisService;
     }
 
-    public List<CodeVersion> getVersions(UUID submissionId) {
-        return versionRepository.findBySubmissionId(submissionId);
+    public List<CodeVersion> getVersions(UUID submissionId, UUID userId) {
+        List<CodeVersion> versions = versionRepository
+                .findBySubmission_IdAndSubmission_UserIdOrderByVersionNumberAsc(submissionId, userId);
+        if (versions.isEmpty()) {
+            throw new ResourceNotFoundException("Submission not found with id: " + submissionId);
+        }
+        return versions;
     }
 
-    @Transactional
-    public CodeVersion analyzeLatestVersion(UUID submissionId) {
-        List<CodeVersion> versions = versionRepository.findBySubmissionId(submissionId);
-        Optional<CodeVersion> latest = versions.stream()
-                .max(Comparator.comparingInt(CodeVersion::getVersionNumber));
-
-        CodeVersion selectedVersion = latest.orElseThrow(
-                () -> new ResourceNotFoundException("No versions found for submission: " + submissionId));
-        return analyzeVersion(selectedVersion.getId());
+    public CodeVersion analyzeLatestVersion(UUID submissionId, UUID userId) {
+        CodeVersion selectedVersion = versionRepository
+                .findTopBySubmission_IdAndSubmission_UserIdOrderByVersionNumberDesc(submissionId, userId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("No versions found for submission: " + submissionId));
+        return analyzeVersion(selectedVersion);
     }
 
-    @Transactional
-    public CodeVersion analyzeVersion(UUID versionId) {
-        CodeVersion version = versionRepository.findById(versionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Version not found with id: " + versionId));
-
+    private CodeVersion analyzeVersion(CodeVersion version) {
         String analysis = aiAnalysisService.analyzeCode(version.getCode());
         version.setAnalysis(analysis);
-        log.info("Persisted analysis for version {}", versionId);
+        log.info("Persisted analysis for version {}", version.getId());
         return versionRepository.save(version);
     }
 
     @Transactional
-    public CodeVersion createNextVersion(UUID submissionId, String newCode) {
-        CodeSubmission submission = submissionRepository.findById(submissionId)
+    public CodeVersion createNextVersion(UUID submissionId, UUID userId, String newCode) {
+        CodeSubmission submission = submissionRepository.findByIdAndUserId(submissionId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
 
         Optional<CodeVersion> latest = versionRepository.findTopBySubmissionIdOrderByVersionNumberDesc(submissionId);
@@ -78,14 +75,14 @@ public class VersionService {
         return versionRepository.save(version);
     }
 
-    public CodeVersion getVersionByVersionId(UUID versionId) {
-        return versionRepository.findById(versionId)
+    public CodeVersion getVersionByVersionId(UUID versionId, UUID userId) {
+        return versionRepository.findByIdAndSubmission_UserId(versionId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Version not found with id: " + versionId));
     }
 
-    public Map<String, CodeVersion> compareVersions(UUID versionAId, UUID versionBId) {
-        CodeVersion versionA = getVersionByVersionId(versionAId);
-        CodeVersion versionB = getVersionByVersionId(versionBId);
+    public Map<String, CodeVersion> compareVersions(UUID versionAId, UUID versionBId, UUID userId) {
+        CodeVersion versionA = getVersionByVersionId(versionAId, userId);
+        CodeVersion versionB = getVersionByVersionId(versionBId, userId);
         Map<String, CodeVersion> result = new HashMap<>();
         result.put("versionA", versionA);
         result.put("versionB", versionB);

@@ -25,7 +25,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String requestId = request.getHeader("X-Request-ID");
-        if (requestId == null || requestId.isBlank()) {
+        if (requestId == null || !requestId.matches("[A-Za-z0-9._-]{1,64}")) {
             requestId = UUID.randomUUID().toString();
         }
         MDC.put("requestId", requestId);

@@ -7,11 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
-
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+      ddl-auto: create-only
 
   flyway:
     enabled: false
@@ -24,9 +20,12 @@ ai:
     endpoint: https://dummy-url
 
 jwt:
-  secret: test-secret-key-test-secret-key-test-secret-key
+  secret: dGVzdC1vbmx5LWtleS1mb3ItdGVzdC1vbmx5LWtleS1mb3I=
   expiration-ms: 3600000
   refresh-expiration-ms: 604800000
+
+cors:
+  allowed-origins: http://localhost:3000
 
 logging:
   level:

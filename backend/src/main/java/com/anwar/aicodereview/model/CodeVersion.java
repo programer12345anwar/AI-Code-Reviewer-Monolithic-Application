@@ -31,10 +31,10 @@ public class CodeVersion {
     @Column(name = "version_number", nullable = false)
     private Integer versionNumber;
 
-    @Column(nullable = false, columnDefinition = "LONGTEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String code;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String analysis;
 
     @Column(name = "created_at", nullable = false)
