@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS code_submission (
-    id BINARY(16) NOT NULL,
-    user_id BINARY(16) NOT NULL,
+    id UUID NOT NULL,
+    user_id UUID NOT NULL,
     filename VARCHAR(255) NOT NULL,
     language VARCHAR(50) NOT NULL,
     code LONGTEXT NOT NULL,
@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS code_submission (
 );
 
 CREATE TABLE IF NOT EXISTS code_version (
-    id BINARY(16) NOT NULL,
-    submission_id BINARY(16) NOT NULL,
+    id UUID NOT NULL,
+    submission_id UUID NOT NULL,
     version_number INT NOT NULL,
     code LONGTEXT NOT NULL,
     analysis LONGTEXT NULL,
